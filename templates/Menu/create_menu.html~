@@ -1,0 +1,18 @@
+{% extends "squelette.html" %}
+{% load i18n %}
+
+{% block content %}
+	<div class="corps">
+        <h2>Creation d'un menu</h2>
+        {% if id %}
+					<form action="{% url save_menu id=id %}" method="POST">
+				{% else %}
+					<form action="{% url save_menu %}" method="POST">
+				{% endif%}
+            {% csrf_token %}
+            <p>Entrez le nom du menu: {{ form.name }}</p>
+            <p><input type="submit" value='Envoyer'></p>
+        </form>
+    </div>
+{% endblock %}
+

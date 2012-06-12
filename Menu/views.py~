@@ -1,0 +1,142 @@
+# -*- coding:Utf-8 -*-
+from django.shortcuts import render_to_response
+from django.template.context import RequestContext
+from models import *
+from forms import *
+from django.contrib import messages
+from django.http import HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
+
+
+def index(request):
+	menus = Menu.objects.all()
+	return render_to_response('Menu/index_menu.html', locals(), context_instance=RequestContext(request))
+
+def create_menu(request):
+	form = createMenu(request.POST)
+	return render_to_response('Menu/create_menu.html', locals(), context_instance=RequestContext(request))
+
+def save_menu(request, id=None):
+	if request.method == "POST":
+		form=createMenu(request.POST)
+		if form.is_valid():
+			cd = form.cleaned_data
+			try:
+				menu = Menu.objects.get(id=id)
+			except:
+				try:
+					menu = Menu.objects.create(name = cd['name'])
+				except Exception, e:
+					print e
+					messages.error(request, "Erreur à la création du menu")
+
+				else:
+					messages.success(request, "Article créé avec succès")
+					return HttpResponseRedirect(reverse("index_menu"))
+			else:
+					menu.name = cd['name']
+					menu.save()
+					messages.success(request, "Menu modifié avec succès")
+					return HttpResponseRedirect(reverse("index_menu"))
+		else:
+			print form.errors
+			messages.error(request, "Formulaire non valide")
+			return HttpResponseRedirect(reverse("create_menu"))
+	else:
+		return HttpResponse("Ce n'est pas POST",403)
+
+def modif_menu(request, id):
+	form = createMenu(initial={'name':Menu.objects.get(id=id).name})
+	return render_to_response('Menu/create_menu.html', locals(), context_instance=RequestContext(request))
+
+def del_menu(request, id):
+	menu = Menu.objects.get(id=id).delete()
+	messages.success(request,'Menu bien supprimé')
+	return HttpResponseRedirect(reverse("index_menu"))
+
+def compose_menu(request, id):
+	try:
+		menu = Menu.objects.get(id=id)
+		starters = Starter.objects.filter(menu = menu)
+		dishes = Dishes.objects.filter(menu = menu)
+		dessert = Dessert.objects.filter(menu = menu)
+	except Exception, e:
+		print e
+		messages.error(request, "Ce menu n'existe pas")
+		return HttpResponseRedirect(reverse("index_menu"))
+		
+	form_starter = createStarter()
+	form_dish = createDish()
+	form_dessert = createDessert()
+	return render_to_response('Menu/compose_menu.html', locals(), context_instance=RequestContext(request))
+
+def save_starter(request):
+	print 'la'
+	if request.method == "POST":
+		form=createStarter(request.POST)
+		if form.is_valid():
+			cd = form.cleaned_data
+			try:
+				starter = Starter.objects.create(menu = Menu.objects.get(id=request.POST['menu_id']) , name = cd['name'], price = cd['price'])
+			except Exception, e:
+				print e
+				messages.error(request, "Erreur à la création de l'entree")
+				return HttpResponseRedirect(reverse("compose_menu", kwargs={'id':request.POST['menu_id']}))
+
+			else:
+				messages.success(request, "Entree créée avec succès")
+				return HttpResponseRedirect(reverse("compose_menu", kwargs={'id':request.POST['menu_id']}))
+		else:
+			print form.errors
+			messages.error(request, "Formulaire non valide")
+			return HttpResponseRedirect(reverse("compose_menu", kwargs={'id':request.POST['menu_id']}))
+	else:
+		return HttpResponse("Ce n'est pas POST",403)
+
+def save_dish(request):
+	print 'la'
+	if request.method == "POST":
+		form=createDish(request.POST)
+		if form.is_valid():
+			cd = form.cleaned_data
+			try:
+				dish = Dishes.objects.create(menu = Menu.objects.get(id=request.POST['menu_id']) , name = cd['name'], price = cd['price'])
+			except Exception, e:
+				print e
+				messages.error(request, "Erreur à la création du plat")
+				return HttpResponseRedirect(reverse("compose_menu", kwargs={'id':request.POST['menu_id']}))
+
+			else:
+				messages.success(request, "Plat créé avec succès")
+				return HttpResponseRedirect(reverse("compose_menu", kwargs={'id':request.POST['menu_id']}))
+		else:
+			print form.errors
+			messages.error(request, "Formulaire non valide")
+			return HttpResponseRedirect(reverse("compose_menu", kwargs={'id':request.POST['menu_id']}))
+	else:
+		return HttpResponse("Ce n'est pas POST",403)
+
+def save_dessert(request):
+	print 'la'
+	if request.method == "POST":
+		form=createDessert(request.POST)
+		if form.is_valid():
+			cd = form.cleaned_data
+			try:
+				dessert = Dessert.objects.create(menu = Menu.objects.get(id=request.POST['menu_id']) , name = cd['name'], price = cd['price'])
+			except Exception, e:
+				print e
+				messages.error(request, "Erreur à la création du dessert")
+				return HttpResponseRedirect(reverse("compose_menu", kwargs={'id':request.POST['menu_id']}))
+
+			else:
+				messages.success(request, "Dessert créé avec succès")
+				return HttpResponseRedirect(reverse("compose_menu", kwargs={'id':request.POST['menu_id']}))
+		else:
+			print form.errors
+			messages.error(request, "Formulaire non valide")
+			return HttpResponseRedirect(reverse("compose_menu", kwargs={'id':request.POST['menu_id']}))
+	else:
+		return HttpResponse("Ce n'est pas POST",403)
+
+

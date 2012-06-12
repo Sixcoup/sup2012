@@ -1,0 +1,67 @@
+{% extends "squelette.html" %}
+{% load i18n %}
+
+
+{% block content %}
+	{% if messages %}
+		{% for message in messages %}
+			<div class="{{ message.tags }}">{{ message }}</div>
+		{% endfor %}
+	{% endif %}
+	<div class="corps">
+		<h1>{{ menu.name }}</h1>
+		<div class="colonne_gauche" style="position:absolute; width:300px;float:'left;'"><p>
+			<h2>Ajouter entree </h2>
+			<form action='{% url save_starter %}' method='POST'>
+	    {% csrf_token %}
+				<p>Nom: {{ form_starter.name }}</p>
+				<p>Prix: {{ form_starter.price }}</p>
+        <p><input type='hidden' value='{{ menu.id }}' name='menu_id'></p>
+				<p><input type='submit' value='Ajouter'></p>
+			</form>			
+			<h2>Ajouter plat </h2>
+			<form action='{% url save_dish %}' method='POST'>
+	    {% csrf_token %}
+				<p>Nom: {{ form_dish.name }}</p>
+				<p>Prix: {{ form_dish.price }}</p>
+        <p><input type='hidden' value='{{ menu.id }}' name='menu_id'></p>
+				<p><input type='submit' value='Ajouter'></p>
+			</form>			
+			<h2>Ajouter Dessert </h2>
+			<form action='{% url save_dessert %}' method='POST'>
+	    {% csrf_token %}
+				<p>Nom: {{ form_dessert.name }}</p>
+				<p>Prix: {{ form_dessert.price }}</p>
+        <p><input type='hidden' value='{{ menu.id }}' name='menu_id'></p>
+				<p><input type='submit' value='Ajouter'></p>
+			</form>			
+		</div>
+		<div class="colonne_droite" style="position:absolute; margin-left:301px; float:'right;'">
+			<h2>Entrees:</h2>
+			{% if starters %}
+				<ul>				
+				{% for starter in starters %}
+				<li><span>{{ starter.name}}</span>|<span>{{ starter.price }}</span>|<span>X</span></li>
+				{% endfor %}
+			</ul>
+			{% endif %}
+			<h2>Plats:</h2>
+			{% if dishes %}
+				<ul>				
+				{% for dish in dishes %}
+				<li><span>{{ dish.name}}</span>|<span>{{ dish.price }}</span>|<span>X</span></li>
+				{% endfor %}
+			</ul>
+			{% endif %}
+			<h2>Desserts:</h2>
+			{% if desserts %}
+				<ul>				
+				{% for dessert in desserts %}
+				<li><span>{{ dessert.name}}</span>|<span>{{ dessert.price }}</span><span>X</span></li>
+				{% endfor %}
+			</ul>
+			{% endif %}
+		</div>
+  </div>
+{% endblock %}
+

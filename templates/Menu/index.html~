@@ -1,0 +1,7 @@
+{% extends "./squelette_menu.html" %}
+{% load i18n %}
+
+{% block content %}
+	HELLO WORLD
+{% endblock %}
+

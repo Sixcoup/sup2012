@@ -1,0 +1,29 @@
+{% extends "Menu/squelette_menu.html" %}
+{% load i18n %}
+
+{% block content %}
+	{% if messages %}
+		{% for message in messages %}
+			<div class="{{ message.tags }}">{{ message }}</div>
+		{% endfor %}
+	{% endif %}
+	{% if menus %}
+		<table>
+				<tr>
+					<th>Nom du menu</th>
+					<th>Modifier</th>
+					<th>Supprimer</th>
+				</tr>
+		{% for menu in menus %}
+			
+				<tr>
+					<td><a href='{% url compose_menu id=menu.id %}'>{{ menu.name }}</a></td>
+					<td><a href='{% url modif_menu id=menu.id %}'> X </a>
+					<td><a href='{% url del_menu id=menu.id %}'> X </a>
+				</tr>
+
+		{% endfor %}
+	</table>
+	{% endif %}
+{% endblock %}
+
